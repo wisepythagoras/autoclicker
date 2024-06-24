@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -34,11 +35,21 @@ func autoclickerTimer(interval int) {
 	}
 }
 
+func stringToKeyCombination(str string) []string {
+	return strings.Split(str, "+")
+}
+
 func main() {
+	var startCombinationStr string
+	var endCombinationStr string
 	intervalPtr := flag.Int("interval", 100, "The clicking interval in ms")
+	flag.StringVar(&startCombinationStr, "start", "s+ctrl+alt", "The start key combination")
+	flag.StringVar(&endCombinationStr, "end", "q+ctrl+alt", "The end key combination")
 	flag.Parse()
 
 	interval := *intervalPtr
+	startCombination := stringToKeyCombination(startCombinationStr)
+	endCombination := stringToKeyCombination(endCombinationStr)
 
 	signals = make(chan time.Time)
 	cancelSignals = make(chan int)
@@ -50,7 +61,7 @@ func main() {
 	go func() {
 		var startTime *time.Time = nil
 
-		hook.Register(hook.KeyDown, []string{"q", "ctrl", "alt"}, func(e hook.Event) {
+		hook.Register(hook.KeyDown, endCombination, func(e hook.Event) {
 			if startTime == nil {
 				fmt.Println("Autoclicking not running")
 				return
@@ -67,7 +78,7 @@ func main() {
 			fmt.Println("Clicked for", diff)
 		})
 
-		hook.Register(hook.KeyDown, []string{"s", "ctrl", "alt"}, func(e hook.Event) {
+		hook.Register(hook.KeyDown, startCombination, func(e hook.Event) {
 			if startTime != nil {
 				return
 			}
