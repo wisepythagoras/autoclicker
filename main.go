@@ -15,7 +15,6 @@ var signals chan time.Time
 var cancelSignals chan int
 
 func startClicker(interval int) {
-	fmt.Println(time.Duration(interval))
 	for {
 		select {
 		case <-cancelSignals:
@@ -61,7 +60,18 @@ func main() {
 	go func() {
 		var startTime *time.Time = nil
 
-		hook.Register(hook.KeyDown, endCombination, func(e hook.Event) {
+		startHook := func(e hook.Event) {
+			if startTime != nil {
+				return
+			}
+
+			fmt.Println("Start autoclicking")
+			t := time.Now()
+			startTime = &t
+			signals <- *startTime
+		}
+
+		endHook := func(e hook.Event) {
 			if startTime == nil {
 				fmt.Println("Autoclicking not running")
 				return
@@ -76,18 +86,21 @@ func main() {
 			startTime = nil
 
 			fmt.Println("Clicked for", diff)
-		})
+		}
 
-		hook.Register(hook.KeyDown, startCombination, func(e hook.Event) {
-			if startTime != nil {
-				return
-			}
+		if endCombinationStr == startCombinationStr {
+			hook.Register(hook.KeyDown, startCombination, func(e hook.Event) {
+				if startTime == nil {
+					startHook(e)
+				} else {
+					endHook(e)
+				}
+			})
+			return
+		}
 
-			fmt.Println("Start autoclicking")
-			t := time.Now()
-			startTime = &t
-			signals <- *startTime
-		})
+		hook.Register(hook.KeyDown, endCombination, endHook)
+		hook.Register(hook.KeyDown, startCombination, startHook)
 
 		hook.Register(hook.MouseHold, []string{}, func(e hook.Event) {
 		})
