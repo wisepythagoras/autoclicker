@@ -22,7 +22,7 @@ func startClicker(interval int) {
 			return
 		default:
 			robotgo.Click()
-			time.Sleep(time.Millisecond * 100)
+			time.Sleep(time.Millisecond * time.Duration(interval))
 		}
 	}
 }
