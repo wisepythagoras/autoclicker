@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	hook "github.com/robotn/gohook"
+	"github.com/wisepythagoras/autoclicker/core"
 )
 
 func main() {
@@ -20,7 +21,7 @@ func main() {
 
 	fmt.Printf("Interval %d ms\n", interval)
 
-	session := Session{Interval: interval}
+	session := core.Session{Interval: interval}
 	var wg sync.WaitGroup
 
 	go session.Init(startCombinationStr, endCombinationStr)
