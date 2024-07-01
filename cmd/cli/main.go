@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"sync"
 
 	hook "github.com/robotn/gohook"
 	"github.com/wisepythagoras/autoclicker/core"
@@ -22,13 +21,10 @@ func main() {
 	fmt.Printf("Interval %d ms\n", interval)
 
 	session := core.Session{Interval: interval}
-	var wg sync.WaitGroup
 
 	go session.Init(startCombinationStr, endCombinationStr)
 	go session.AutoclickTimer()
 
 	s := hook.Start()
 	<-hook.Process(s)
-
-	wg.Wait()
 }
