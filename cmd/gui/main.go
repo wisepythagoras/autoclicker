@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	g "github.com/AllenDang/giu"
 	hook "github.com/robotn/gohook"
@@ -12,6 +13,8 @@ type Window struct {
 	window    *g.MasterWindow
 	KeyCombo  []string
 	tempCombo []string
+	lastTap   *time.Time
+	editMode  bool
 }
 
 func main() {
@@ -36,10 +39,21 @@ func (w *Window) Init() {
 }
 
 func (w *Window) loop() {
+	buttonLabel := "Register Combination"
+
+	if w.editMode {
+		buttonLabel = "Save Combination"
+	}
+
 	g.SingleWindow().Layout(
 		g.Label(fmt.Sprintf("Combination: %s", strings.Join(w.KeyCombo, "+"))),
-		g.Button("Register Hotkey").OnClick(func() {
-			fmt.Println("Clicked")
+		g.Button(buttonLabel).OnClick(func() {
+			if w.editMode {
+				w.editMode = false
+				w.lastTap = nil
+			} else {
+				w.editMode = true
+			}
 		}),
 	)
 }
