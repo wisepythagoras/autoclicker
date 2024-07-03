@@ -29,7 +29,15 @@ func main() {
 
 func (w *Window) Init() {
 	hook.Register(hook.KeyDown, []string{}, func(e hook.Event) {
-		fmt.Println(e)
+		if !w.editMode {
+			return
+		}
+
+		if w.lastTap == nil || w.lastTap.Sub(time.Now()).Milliseconds() > 1000 {
+			w.tempCombo = make([]string, 0)
+		}
+
+		fmt.Println(string(e.Keychar), e.Rawcode)
 	})
 
 	go func() {
