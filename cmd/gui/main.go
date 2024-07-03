@@ -19,7 +19,7 @@ type Window struct {
 
 func main() {
 	window := Window{
-		window:    g.NewMasterWindow("Autoclicker", 400, 200, 0),
+		window:    g.NewMasterWindow("Autoclicker", 160, 60, 0),
 		KeyCombo:  []string{"s", "ctrl", "alt"},
 		tempCombo: []string{},
 	}
@@ -37,7 +37,8 @@ func (w *Window) Init() {
 			w.tempCombo = make([]string, 0)
 		}
 
-		fmt.Println(string(e.Keychar), e.Rawcode)
+		key := hook.RawcodetoKeychar(e.Rawcode)
+		fmt.Println("-", key, e.Keychar, e.Rawcode)
 	})
 
 	go func() {
